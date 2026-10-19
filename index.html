@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>谢谢hm</title>
+    <style>
+      :root {
+        --bg1: #0f172a;
+        --bg2: #1e293b;
+        --accent: #f472b6;
+        --soft: #f9a8d4;
+        --text: #f8fafc;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        height: 100%;
+        font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        color: var(--text);
+        overflow: hidden;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .bg-glow {
+        position: absolute;
+        width: 60vmax;
+        height: 60vmax;
+        border-radius: 50%;
+        background: rgba(244, 114, 182, 0.12);
+        filter: blur(80px);
+        animation: pulse 6s ease-in-out infinite;
+      }
+
+      .card {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 48px 54px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 24px;
+        background: rgba(15, 23, 42, 0.35);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(6px);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.5rem, 6vw, 5rem);
+        letter-spacing: 0.15em;
+        font-weight: 800;
+        color: #fff;
+        text-shadow: 0 0 20px rgba(249,168,212,0.7);
+      }
+
+      .subtitle {
+        margin-top: 18px;
+        font-size: clamp(1rem, 2.3vw, 1.3rem);
+        letter-spacing: 0.12em;
+        color: var(--soft);
+      }
+
+      .controls {
+        margin-top: 28px;
+      }
+
+      button {
+        appearance: none;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 26px;
+        background: linear-gradient(135deg, var(--accent), #f9a8d4);
+        color: #1f2937;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(244,114,182,0.4);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 14px 30px rgba(244,114,182,0.45);
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(0.95); opacity: 0.7; }
+        50% { transform: scale(1.08); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+    <div class="card">
+      <h1>谢谢hm</h1>
+      <div class="subtitle">听我说谢谢你</div>
+      <div class="controls">
+        <button id="toggleAudio">播放背景音乐</button>
+      </div>
+    </div>
+
+    <audio id="bgm" loop preload="auto" aria-label="背景音乐">
+      <source src="https://music.163.com/song/media/outer/url?id=1371355647.mp3" type="audio/mpeg" />
+      浏览器不支持 audio 标签。
+    </audio>
+
+    <script>
+      const audio = document.getElementById('bgm');
+      const button = document.getElementById('toggleAudio');
+
+      button.addEventListener('click', async () => {
+        try {
+          if (audio.paused) {
+            await audio.play();
+            button.textContent = '暂停背景音乐';
+          } else {
+            audio.pause();
+            button.textContent = '播放背景音乐';
+          }
+        } catch (err) {
+          button.textContent = '点击再次尝试';
+          console.error('Audio play failed:', err);
+        }
+      });
+    </script>
+  </body>
+</html>
