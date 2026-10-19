@@ -108,29 +108,81 @@
       </div>
     </div>
 
-    <audio id="bgm" loop preload="auto" aria-label="背景音乐">
-      <source src="https://music.163.com/song/media/outer/url?id=1371355647.mp3" type="audio/mpeg" />
-      浏览器不支持 audio 标签。
-    </audio>
-
     <script>
-      const audio = document.getElementById('bgm');
       const button = document.getElementById('toggleAudio');
+      let audioCtx = null;
+      let gainNode = null;
+      let melodyTimer = null;
+      let isPlaying = false;
 
-      button.addEventListener('click', async () => {
-        try {
-          if (audio.paused) {
-            await audio.play();
-            button.textContent = '暂停背景音乐';
-          } else {
-            audio.pause();
-            button.textContent = '播放背景音乐';
-          }
-        } catch (err) {
-          button.textContent = '点击再次尝试';
-          console.error('Audio play failed:', err);
+      const melody = [261.63, 329.63, 392.0, 329.63, 293.66, 349.23, 392.0, 349.23, 329.63, 293.66, 261.63, 293.66];
+
+      function ensureAudio() {
+        if (!audioCtx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioCtx();
+          gainNode = audioCtx.createGain();
+          gainNode.gain.value = 0.04;
+          gainNode.connect(audioCtx.destination);
         }
-      });
+
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playTone(freq, startTime, duration, type = 'sine') {
+        if (!audioCtx || !gainNode) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.value = freq;
+
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.7, startTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+        osc.connect(gain);
+        gain.connect(gainNode);
+
+        osc.start(startTime);
+        osc.stop(startTime + duration + 0.05);
+      }
+
+      function playMelodyLoop() {
+        if (!audioCtx || !gainNode) return;
+
+        const now = audioCtx.currentTime;
+        melody.forEach((freq, index) => {
+          const start = now + index * 0.35;
+          playTone(freq, start, 0.28, 'sine');
+          if (index % 2 === 0) {
+            playTone(freq / 2, start, 0.32, 'triangle');
+          }
+        });
+
+        melodyTimer = setTimeout(() => {
+          if (isPlaying) playMelodyLoop();
+        }, 4200);
+      }
+
+      function toggleAudio() {
+        ensureAudio();
+
+        if (isPlaying) {
+          isPlaying = false;
+          clearTimeout(melodyTimer);
+          button.textContent = '播放背景音乐';
+          return;
+        }
+
+        isPlaying = true;
+        button.textContent = '暂停背景音乐';
+        playMelodyLoop();
+      }
+
+      button.addEventListener('click', toggleAudio);
     </script>
   </body>
 </html>
