@@ -1,2 +1,3 @@
 # thanks-hm-web
-A simple GitHub Pages site that says Thanks hm with background music
+
+This repo hosts a simple GitHub Pages landing page for "谢谢hm" with a Spotify embed player.
